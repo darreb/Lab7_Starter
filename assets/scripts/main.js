@@ -22,6 +22,10 @@ const router = new Router(function () {
    * are removing any "shown" classes on <sections> you don't want to display, this home method should
    * be called more than just at the start. You should only really need two lines for this function.
    */
+  let sections = document.getElementsByTagName('section');
+  sections[0].className += ' shown';
+  sections[1].className = 'section--recipe-expand'
+  
 });
 
 window.addEventListener('DOMContentLoaded', init);
@@ -59,6 +63,17 @@ function initializeServiceWorker() {
    *  TODO - Part 2
    *  Initialize the service worker set up in sw.js
    */
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () =>{
+      navigator.serviceWorker.register('../sw.js')
+        .then(registration => {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        })
+        .catch(err => {
+          console.log('ServiceWorker registration failed: ', err);
+        })
+    })
+  }
 }
 
 /**
@@ -110,6 +125,16 @@ function createRecipeCards() {
      * add this class to the correct <section> to display that section
      */
     if (i >= 3) recipeCard.classList.add('hidden');
+    bindRecipeCard(recipeCard, recipeData[recipes[i]]['page-name']);
+    router.addPage(recipeData[recipes[i]]['page-name'], () => {
+      let sections = document.getElementsByTagName('section');
+      sections[0].className = 'section--recipe-cards';
+      sections[1].className += ' shown'
+
+      let recipeExpand = document.getElementsByTagName('recipe-expand');
+      console.log(recipeExpand);
+      recipeExpand[0].data = recipeData[recipes[i]];
+    })
     document.querySelector('.recipe-cards--wrapper').appendChild(recipeCard);
   }
 }
@@ -151,9 +176,12 @@ function bindShowMore() {
  */
 function bindRecipeCard(recipeCard, pageName) {
   /**
-   * TODO - Part 1
+   * TODO - Part 1 
    * Fill in this function as specified in the comment above
    */
+  recipeCard.addEventListener('click', () =>{
+    router.navigate(pageName, false);
+  })
 }
 
 /**
@@ -163,8 +191,14 @@ function bindRecipeCard(recipeCard, pageName) {
 function bindEscKey() {
   /**
    * TODO - Part 1
-   * Fill in this function as specified in the comment above
+   * Fill in this function as spec ified in the comment above
    */
+  document.addEventListener('keydown', (e) => {
+    if(e.code == "Escape"){
+      router.navigate("", false);
+    }
+  })
+  
 }
 
 /**
@@ -179,4 +213,8 @@ function bindPopstate() {
    * TODO - Part 1
    * Fill in this function as specified in the comment above
    */
+  window.onpopstate = function(event){
+    console.log(document.location.hash.substring(1))
+    router.navigate(document.location.hash.substring(1), true);
+  }
 }

@@ -9,6 +9,13 @@ self.addEventListener('install', function (event) {
    * TODO - Part 2
    * Create a function as outlined above
    */
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(function(cache){
+        console.log('Opened cache');
+      })
+  )
+  console.log('Service Worker: Installed');
 });
 
 /**
@@ -21,6 +28,7 @@ self.addEventListener('activate', function (event) {
    * TODO - Part 2
    * Create a function as outlined above, it should be one line
    */
+  console.log('Service Worker: Activated')
 });
 
 // Intercept fetch requests and store them in the cache

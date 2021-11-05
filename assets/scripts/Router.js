@@ -24,6 +24,10 @@ export class Router {
      * TODO Part 1
      * Fill in this function as specified in the comment above
      */
+    homeFunc();
+    this.homeFunc = homeFunc;
+    this.homeUrl = window.location;
+    this.pageFuncs = {};
   }
 
   /**
@@ -38,6 +42,7 @@ export class Router {
      * TODO Part 1
      * Fill in this function as specified in the comment above
      */
+    this.pageFuncs[page] = pageFunc;
   }
 
   /**
@@ -52,5 +57,23 @@ export class Router {
      * TODO Part 1
      * Fill in this function as specified in the comment above
      */
+    if(page == "home" || page == ""){
+      this.homeFunc();
+      if(!statePopped){
+        history.pushState({page: "home"}, "home", window.location.pathname);
+      }
+    }
+    else{
+      if(statePopped){
+        this.pageFuncs[page]();
+      }
+      else{
+        this.pageFuncs[page]();
+        history.pushState({page: page}, page, window.location);
+        window.location.hash = page;
+      }
+    }
+    
+    
   }
 }
